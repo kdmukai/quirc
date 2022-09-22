@@ -79,13 +79,6 @@ struct quirc_grid {
 	double			c[QUIRC_PERSPECTIVE_PARAMS];
 };
 
-struct quirc_flood_fill_vars {
-	int y;
-	int right;
-	int left_up;
-	int left_down;
-};
-
 struct quirc {
 	uint8_t			*image;
 	quirc_pixel_t		*pixels;
@@ -103,6 +96,8 @@ struct quirc {
 
 	size_t      		num_flood_fill_vars;
 	struct quirc_flood_fill_vars *flood_fill_vars;
+
+	int			need_to_free;
 };
 
 /************************************************************************

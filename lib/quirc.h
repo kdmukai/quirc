@@ -23,7 +23,17 @@
 extern "C" {
 #endif
 
+struct quirc_flood_fill_vars {
+	int y;
+	int right;
+	int left_up;
+	int left_down;
+};
+
 struct quirc;
+
+#define QUIRC_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define QUIRC_VARS_NUMOF(h) QUIRC_MAX(1, (((h) * 2) / 3))
 
 /* Obtain the library version string. */
 const char *quirc_version(void);
@@ -32,6 +42,16 @@ const char *quirc_version(void);
  * if sufficient memory could not be allocated.
  */
 struct quirc *quirc_new(void);
+
+/* Alternate constructor function that accepts buffer pointers so that
+ * no malloc() or free() calls are necessary. Useful on embedded systems
+ * to help avoid allocating more buffer space than might be available, or
+ * to use a memory buffer that is statically allocated or allocated with
+ * something other than malloc().
+ *
+ * Note that QUIRC_PIXEL_ALIAS_IMAGE must be true (1) to us this constructor.
+ */
+int quirc_init(struct quirc* q, int w, int h, uint8_t* image, struct quirc_flood_fill_vars* vars, size_t num_vars);
 
 /* Destroy a QR-code recognizer. */
 void quirc_destroy(struct quirc *q);
