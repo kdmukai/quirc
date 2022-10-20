@@ -9,7 +9,7 @@
 #include "py/builtin.h"
 #include "py/objarray.h"
 
-#include "quirc_internal.h"
+#include "lib/quirc_internal.h"
 
 /// package: foundation.qr
 
@@ -120,14 +120,14 @@ STATIC mp_obj_array_t quirc_framebuffer_obj = {
 };
 
 STATIC const mp_rom_map_elem_t quirc_module_globals_table[] = {
-    {MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_quirc)},
-    {MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&quirc_init_obj)},
-    {MP_ROM_QSTR(MP_QSTR_scan), MP_ROM_PTR(&quirc_scan_obj)},
-    {MP_ROM_QSTR(MP_QSTR_framebuffer), MP_ROM_PTR(&quirc_framebuffer_obj)}
+    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_quirc) },
+    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&quirc_init_obj) },
+    { MP_ROM_QSTR(MP_QSTR_scan), MP_ROM_PTR(&quirc_scan_obj) },
+    { MP_ROM_QSTR(MP_QSTR_framebuffer), MP_ROM_PTR(&quirc_framebuffer_obj) }
 };
 STATIC MP_DEFINE_CONST_DICT(quirc_module_globals, quirc_module_globals_table);
 
-STATIC const mp_obj_module_t quirc_user_cmodule = {
+const mp_obj_module_t quirc_user_cmodule = {
     .base    = {&mp_type_module},
     .globals = (mp_obj_dict_t*)&quirc_module_globals,
 };
