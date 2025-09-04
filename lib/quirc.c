@@ -31,18 +31,41 @@ struct quirc *quirc_new(void)
 		return NULL;
 
 	memset(q, 0, sizeof(*q));
+	q->need_to_free = 1;
 	return q;
 }
 
 void quirc_destroy(struct quirc *q)
 {
-	free(q->image);
-	/* q->pixels may alias q->image when their type representation is of the
-	   same size, so we need to be careful here to avoid a double free */
-	if (!QUIRC_PIXEL_ALIAS_IMAGE)
-		free(q->pixels);
-	free(q->flood_fill_vars);
-	free(q);
+	if (!q->need_to_free)
+		return;
+
+	// free(q->image);
+	// /* q->pixels may alias q->image when their type representation is of the
+	//    same size, so we need to be careful here to avoid a double free */
+	// if (!QUIRC_PIXEL_ALIAS_IMAGE)
+	// 	free(q->pixels);
+	// free(q->flood_fill_vars);
+	// free(q);
+}
+
+int quirc_init(struct quirc* q, int w, int h, uint8_t* image, struct quirc_flood_fill_vars* vars, size_t num_vars) {
+	if (!q || !image || !QUIRC_PIXEL_ALIAS_IMAGE)
+		return -1;
+
+	/*
+	 * Same sanity check as in quirc_resize() for the same reasons.
+	 */
+	if (w < 0 || h < 0)
+		return -1;
+
+    memset(q, 0, sizeof(*q));
+    q->w     = w;
+    q->h     = h;
+    q->image = image;
+	q->num_flood_fill_vars = num_vars;
+	q->flood_fill_vars = vars;
+    return 0;
 }
 
 int quirc_resize(struct quirc *q, int w, int h)
@@ -52,6 +75,18 @@ int quirc_resize(struct quirc *q, int w, int h)
 	size_t num_vars;
 	size_t vars_byte_size;
 	struct quirc_flood_fill_vars *vars = NULL;
+
+	/* Restrict use of this function when quirc_init() was used */
+	if (!q->need_to_free) {
+		/*
+		 * Just update the internal sizes and assume the caller knows what they
+		 * are doing and provided a big enough image buffer in quirc_init().
+		 */
+		q->w = w;
+		q->h = h;
+
+		return 0;
+	}
 
 	/*
 	 * XXX: w and h should be size_t (or at least unsigned) as negatives
@@ -120,22 +155,22 @@ int quirc_resize(struct quirc *q, int w, int h)
 	/* alloc succeeded, update `q` with the new size and buffers */
 	q->w = w;
 	q->h = h;
-	free(q->image);
+	// free(q->image);
 	q->image = image;
 	if (!QUIRC_PIXEL_ALIAS_IMAGE) {
-		free(q->pixels);
+		// free(q->pixels);
 		q->pixels = pixels;
 	}
-	free(q->flood_fill_vars);
+	// free(q->flood_fill_vars);
 	q->flood_fill_vars = vars;
 	q->num_flood_fill_vars = num_vars;
 
 	return 0;
 	/* NOTREACHED */
 fail:
-	free(image);
-	free(pixels);
-	free(vars);
+	// free(image);
+	// free(pixels);
+	// free(vars);
 
 	return -1;
 }
